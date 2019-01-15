@@ -1,3 +1,5 @@
+# SETUP
+import getpass
 import requests
 import time
 import pandas as pd
@@ -5,7 +7,10 @@ import pandas as pd
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
-pw = input('Enter PW : ')
+# log-in
+
+insert_id = input('Enter Google ID : ')
+insert_pw = getpass.getpass('Enter Google PW : ')
 
 url = "https://www.rocketpunch.com/login"
 driver = webdriver.Chrome()
@@ -14,38 +19,38 @@ driver.get(url)
 login_google = driver.find_element_by_xpath('//*[@id="login-main"]/div[3]/a[2]')
 login_google.click()
 
-time.sleep(1)
+time.sleep(2)
 
 google_id = driver.find_element_by_xpath('//*[@id="identifierId"]')
-google_id.send_keys('syh602@gmail.com')
+google_id.send_keys(insert_id)
 
-time.sleep(1)
+time.sleep(2)
 
 google_id_submit = driver.find_element_by_xpath('//*[@id="identifierNext"]/content')
 google_id_submit.click()
 
-time.sleep(1)
+time.sleep(2)
 
 google_pw = driver.find_element_by_xpath('//*[@id="password"]/div[1]/div/div[1]/input')
-google_pw.send_keys(pw)
+google_pw.send_keys(insert_pw)
 
-time.sleep(1)
+time.sleep(2)
 
 google_pw_submit = driver.find_element_by_xpath('//*[@id="passwordNext"]/content/span')
 google_pw_submit.click()
 
-time.sleep(1)
+time.sleep(2)
+
+# get bookmark url
 
 url = "https://www.rocketpunch.com/@quartz/bookmark"
 driver.get(url)
 
-time.sleep(1)
+time.sleep(2)
 
 # get page sourse, parse html
 html = driver.page_source
 soup = BeautifulSoup(html, 'html.parser')
-
-# title
 
 date_list = []
 company_list = []
@@ -81,7 +86,8 @@ for i in range(100):
     except:
         print("The loop is ended. You have %d bookmarks." % (i))
         break
-    
+
+# make dataframe, xlsx file
 data_job = pd.DataFrame(columns=['date', 'company', 'job', 'salary', 'condition', 'special'])
 data_job['date'] = date_list
 data_job['company'] = company_list
@@ -89,6 +95,7 @@ data_job['job'] = job_list
 data_job['salary'] = salary_list
 data_job['condition'] = condition_list
 data_job['special'] = special_list
-data_job.to_csv('rocketpunch_bookmark.csv')
+data_job.to_excel('rocketpunch_bookmark.xlsx', sheet_name='rocketpunch_01')
 
+# quit
 driver.quit()
